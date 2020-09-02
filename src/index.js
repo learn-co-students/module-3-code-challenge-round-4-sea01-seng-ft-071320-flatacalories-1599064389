@@ -22,6 +22,10 @@ function handleMouseUpEvent(event) {
 
     updateCalories(characterCard, 0);
     patchCalories(characterId, 0);
+  } else if (event.target.matches(".edit-name")) {
+    toggleEditForm(event.target.parentElement.parentElement);
+  } else if (event.target.matches("#create-character-toggle")) {
+    toggleCreateForm();
   }
 }
 
@@ -41,6 +45,33 @@ function handleSubmitEvent(event) {
 
     updateCalories(characterCard, newCalories); // Update front end
     patchCalories(characterId, newCalories); // Update back end
+  } else if (event.target.matches(".edit-form")) {
+    event.preventDefault();
+
+    const characterCard = event.target.parentElement;
+    const characterId = characterCard.dataset.characterId;
+    const characterName = event.target.name.value;
+
+    updateName(characterCard, characterName);
+    patchName(characterId, characterName);
+
+    toggleEditForm(characterCard); // Close the character card after submit
+  } else if (event.target.matches("#create-character-form")) {
+    event.preventDefault();
+
+    const character = {
+      name: event.target.name.value,
+      calories: 0,
+      image: "assets/dummy.gif",
+    };
+
+    renderCharacterToCharacterBar(character);
+    renderCharacterToDetailedInfo(character);
+    postCharacter(character);
+
+    // Clear the input field and reset the form
+    event.target.name.value = "";
+    // toggleCreateForm(); > commented out for now because there's no toggle button
   }
 }
 
@@ -68,6 +99,21 @@ function fetchAndRenderAllCharacters() {
     .then(renderCharacters);
 }
 
+function postCharacter(character) {
+  const configObj = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(character),
+  };
+
+  fetch("http://localhost:3000/characters/", configObj)
+    .then((resp) => resp.json())
+    .catch(console.log);
+}
+
 function patchCalories(characterId, calories) {
   // Would be better to build custom handling for this to send a request
   //   to INCREASE the current calories instead of just bare updating calories
@@ -79,6 +125,21 @@ function patchCalories(characterId, calories) {
       Accept: "application/json",
     },
     body: JSON.stringify({ calories: calories }),
+  };
+
+  fetch(`http://localhost:3000/characters/${characterId}`, configObj)
+    .then((resp) => resp.json())
+    .catch(console.log);
+}
+
+function patchName(characterId, name) {
+  const configObj = {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({ name: name }),
   };
 
   fetch(`http://localhost:3000/characters/${characterId}`, configObj)
@@ -114,7 +175,13 @@ function renderCharacterToDetailedInfo(character) {
   characterInfo.className = "hidden";
 
   characterInfo.innerHTML = `
-    <p id="name">${character.name}</p>
+    <p class="name">${character.name} <button class="edit-name">Edit Name</button></p>
+    <form class="edit-form hidden">
+      <p></p> <!-- Shh, this is here to make the spacing right -->
+      <input type="text" value="${character.name}" placeholder="${character.name}" name="name" />
+      <input type="submit" value="Update Name" />
+      <button class="edit-name" form="">Close</button>
+    </form>
     <img
       class="image"
       src="${character.image}"
@@ -135,4 +202,43 @@ function updateCalories(characterCard, calories) {
   const caloriesSpan = characterCard.getElementsByClassName("calories")[0];
 
   caloriesSpan.textContent = `${calories} Calories`;
+}
+
+function updateName(characterCard, name) {
+  const nameElement = characterCard.getElementsByClassName("name")[0];
+  const barNameElement = document.querySelector(
+    `#character-bar > span[data-character-id="${characterCard.dataset.characterId}"`
+  );
+
+  const editButton = document.createElement("button");
+  editButton.classList.add("edit-name");
+  editButton.textContent = "Edit Name";
+
+  nameElement.textContent = `${name} `;
+  nameElement.appendChild(editButton);
+  barNameElement.textContent = name;
+}
+
+function toggleEditForm(characterCard) {
+  const nameElement = characterCard.getElementsByClassName("name")[0];
+  const editForm = characterCard.querySelector("form.edit-form");
+
+  if (editForm.classList.contains("hidden")) {
+    nameElement.classList.add("hidden");
+    editForm.classList.remove("hidden");
+  } else {
+    nameElement.classList.remove("hidden");
+    editForm.classList.add("hidden");
+  }
+}
+
+// TODO: Create an actual toggle button on the front end
+function toggleCreateForm() {
+  const createForm = document.getElementById("create-character-form");
+
+  if (createForm.classList.contains("hidden")) {
+    createForm.classList.remove("hidden");
+  } else {
+    createForm.classList.add("hidden");
+  }
 }

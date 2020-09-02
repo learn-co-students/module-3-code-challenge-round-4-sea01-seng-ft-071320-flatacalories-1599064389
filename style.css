@@ -3,6 +3,15 @@
   background-color: rgb(49, 109, 179);
 }
 
+#create-character {
+  height: 15vh;
+  background: rgb(49, 109, 179);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-bottom: 3vh;
+}
+
 #character-bar {
   height: 15vh;
   background: rgb(49, 109, 179);
@@ -53,5 +62,5 @@ input[type="text"] {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
