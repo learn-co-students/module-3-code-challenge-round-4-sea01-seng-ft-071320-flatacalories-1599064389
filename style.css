@@ -1,6 +1,15 @@
-.logo{
+.logo {
   text-align: center;
   background-color: rgb(49, 109, 179);
+}
+
+#create-character {
+  height: 15vh;
+  background: rgb(49, 109, 179);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-bottom: 3vh;
 }
 
 #character-bar {
@@ -24,29 +33,34 @@
   border: 1px solid white;
 }
 
-.characterInfo{
+.characterInfo {
   height: 550px;
   padding: 30px;
   font-size: 24px;
-  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
   border: dotted;
   text-align: center;
 }
 
-input[type="submit"], button{
+input[type="submit"],
+button {
   background-color: rgb(49, 109, 179);
   color: white;
   font-size: 18px;
   border-radius: 6px;
-  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
-input[type="text"]{
+input[type="text"] {
   height: 4vh;
   font-size: 3vh;
 }
 
-#image{
+.image {
   width: 300px;
   height: 300px;
+}
+
+.hidden {
+  display: none !important;
 }
